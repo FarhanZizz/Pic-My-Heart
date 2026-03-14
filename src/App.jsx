@@ -1,22 +1,24 @@
-import { useState, useCallback, useMemo } from 'react'
-import Navbar from './components/Navbar'
+import { useReducer, useState, useCallback, useMemo } from 'react'
+import Navbar from './components/navbar'
 import SearchBar from './components/SearchBar'
 import PhotoGrid from './components/PhotoGrid'
 import LoadingSpinner from './components/LoadingSpinner'
 import useFetchPhotos from './hooks/useFetchPhotos'
+import { favouritesReducer, initialState } from './hooks/favouritesReducer'
 
 export default function App() {
   const { photos, loading, error } = useFetchPhotos()
+  const [state, dispatch] = useReducer(favouritesReducer, initialState)
   const [searchQuery, setSearchQuery] = useState('')
 
-  // useCallback keeps a stable function reference across renders
-  // without it, a new function would be passed to SearchBar on every render
   const handleSearchChange = useCallback((value) => {
     setSearchQuery(value)
   }, [])
 
-  // useMemo only recomputes the filtered list when photos or searchQuery changes
-  // prevents re-filtering on every unrelated render
+  const handleToggleFavourite = useCallback((photo) => {
+    dispatch({ type: 'TOGGLE_FAVOURITE', payload: photo })
+  }, [])
+
   const filteredPhotos = useMemo(() => {
     if (!searchQuery.trim()) return photos
     return photos.filter((p) =>
@@ -26,7 +28,11 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-navy">
-      <Navbar favouriteCount={0} showFavourites={false} onToggleFavourites={() => {}} />
+      <Navbar
+        favouriteCount={state.favourites.length}
+        showFavourites={false}
+        onToggleFavourites={() => {}}
+      />
       <main>
         <div className="max-w-7xl mx-auto px-4 pt-8 pb-2">
           <h1 className="text-2xl font-semibold text-white/90" style={{ fontFamily: 'Playfair Display, serif' }}>
@@ -52,6 +58,8 @@ export default function App() {
         {!loading && !error && (
           <PhotoGrid
             photos={filteredPhotos}
+            favourites={state.favourites}
+            onToggleFavourite={handleToggleFavourite}
             emptyMessage="No photos match your search."
           />
         )}

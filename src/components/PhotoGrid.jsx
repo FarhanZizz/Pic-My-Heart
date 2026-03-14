@@ -1,6 +1,6 @@
 import PhotoCard from './PhotoCard'
 
-export default function PhotoGrid({ photos, emptyMessage }) {
+export default function PhotoGrid({ photos, favourites, onToggleFavourite, emptyMessage }) {
   if (photos.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-24 text-white/30">
@@ -16,7 +16,12 @@ export default function PhotoGrid({ photos, emptyMessage }) {
     <div className="max-w-7xl mx-auto px-4 pb-12">
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {photos.map((photo) => (
-          <PhotoCard key={photo.id} photo={photo} />
+          <PhotoCard
+            key={photo.id}
+            photo={photo}
+            isFavourited={favourites.some((f) => f.id === photo.id)}
+            onToggleFavourite={onToggleFavourite}
+          />
         ))}
       </div>
     </div>

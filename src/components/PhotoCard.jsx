@@ -1,4 +1,4 @@
-export default function PhotoCard({ photo }) {
+export default function PhotoCard({ photo, isFavourited, onToggleFavourite }) {
   return (
     <div className="relative group rounded-xl overflow-hidden cursor-pointer bg-dark-blue aspect-[3/4]">
 
@@ -19,15 +19,24 @@ export default function PhotoCard({ photo }) {
         <p className="text-white/50 text-xs mt-0.5">{photo.width} × {photo.height}</p>
       </div>
 
-      {/* Heart button — UI only, no functionality yet */}
+      {/* Heart button */}
       <button
-        className="absolute top-3 right-3 p-2 rounded-full bg-black/30 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300 hover:bg-crimson"
+        className={`absolute top-3 right-3 p-2 rounded-full backdrop-blur-sm transition-all duration-200 ${
+          isFavourited
+            ? 'bg-crimson opacity-100'
+            : 'bg-black/30 opacity-0 group-hover:opacity-100 hover:bg-crimson'
+        }`}
+        onClick={(e) => {
+          e.stopPropagation()
+          onToggleFavourite(photo)
+        }}
+        aria-label={isFavourited ? 'Remove from favourites' : 'Add to favourites'}
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
           className="w-4 h-4 text-white"
           viewBox="0 0 24 24"
-          fill="none"
+          fill={isFavourited ? 'currentColor' : 'none'}
           stroke="currentColor"
           strokeWidth="2"
         >
