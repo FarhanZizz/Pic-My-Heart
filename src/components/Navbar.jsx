@@ -1,9 +1,13 @@
-const Navbar = () => {
+export default function Navbar({
+  favouriteCount,
+  showFavourites,
+  onToggleFavourites,
+}) {
   return (
     <nav className="bg-dark-blue border-b border-ocean sticky top-0 z-50">
-      <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
+      <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
         {/* Logo */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2.5">
           <svg
             width="28"
             height="28"
@@ -30,26 +34,44 @@ const Navbar = () => {
               opacity="0.95"
             />
           </svg>
-          <span className="text-white font-semibold text-lg tracking-wide">
+          <span className="text-white font-medium text-lg tracking-wide">
             Pic My <span className="text-crimson">Heart</span>
           </span>
         </div>
 
-        {/* Favourites count badge */}
-        <div className="flex items-center gap-2 text-sm text-white/70">
+        {/* Favourites toggle button */}
+        <button
+          onClick={onToggleFavourites}
+          className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 border ${
+            showFavourites
+              ? "bg-crimson border-crimson text-white"
+              : "border-ocean text-white/70 hover:border-crimson hover:text-white"
+          }`}
+        >
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            className="w-5 h-5 text-crimson"
+            className="w-4 h-4"
             viewBox="0 0 24 24"
-            fill="currentColor"
+            fill={showFavourites ? "currentColor" : "none"}
+            stroke="currentColor"
+            strokeWidth="2"
           >
-            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
           </svg>
           <span>Favourites</span>
-        </div>
+          {favouriteCount > 0 && (
+            <span
+              className={`text-xs px-1.5 py-0.5 rounded-full font-semibold ${
+                showFavourites
+                  ? "bg-white/20 text-white"
+                  : "bg-crimson text-white"
+              }`}
+            >
+              {favouriteCount}
+            </span>
+          )}
+        </button>
       </div>
     </nav>
   );
-};
-
-export default Navbar;
+}
