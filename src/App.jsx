@@ -1,5 +1,5 @@
-import { useReducer, useState, useCallback, useMemo } from 'react'
-import Navbar from './components/navbar'
+import { useReducer, useEffect, useState, useCallback, useMemo } from 'react'
+import Navbar from './components/Navbar'
 import SearchBar from './components/SearchBar'
 import PhotoGrid from './components/PhotoGrid'
 import LoadingSpinner from './components/LoadingSpinner'
@@ -10,6 +10,14 @@ export default function App() {
   const { photos, loading, error } = useFetchPhotos()
   const [state, dispatch] = useReducer(favouritesReducer, initialState)
   const [searchQuery, setSearchQuery] = useState('')
+
+  // Rehydrate favourites from localStorage on mount
+  useEffect(() => {
+    const stored = localStorage.getItem('pmh_favourites')
+    if (stored) {
+      dispatch({ type: 'LOAD_FAVOURITES', payload: JSON.parse(stored) })
+    }
+  }, [])
 
   const handleSearchChange = useCallback((value) => {
     setSearchQuery(value)
