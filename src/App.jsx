@@ -1,5 +1,6 @@
 import Navbar from './components/Navbar'
 import SearchBar from './components/SearchBar'
+import PhotoGrid from './components/PhotoGrid'
 
 export default function App() {
   return (
@@ -13,6 +14,7 @@ export default function App() {
           <p className="text-white/40 text-sm mt-1">30 photos from Picsum</p>
         </div>
         <SearchBar />
+        <PhotoGrid />
       </main>
     </div>
   )
