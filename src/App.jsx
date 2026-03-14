@@ -1,5 +1,5 @@
 import { useReducer, useEffect, useState, useCallback, useMemo } from 'react'
-import Navbar from './components/Navbar'
+import Navbar from './components/navbar'
 import SearchBar from './components/SearchBar'
 import PhotoGrid from './components/PhotoGrid'
 import LoadingSpinner from './components/LoadingSpinner'
