@@ -1,3 +1,4 @@
+import { useState, useCallback, useMemo } from 'react'
 import Navbar from './components/Navbar'
 import SearchBar from './components/SearchBar'
 import PhotoGrid from './components/PhotoGrid'
@@ -6,6 +7,22 @@ import useFetchPhotos from './hooks/useFetchPhotos'
 
 export default function App() {
   const { photos, loading, error } = useFetchPhotos()
+  const [searchQuery, setSearchQuery] = useState('')
+
+  // useCallback keeps a stable function reference across renders
+  // without it, a new function would be passed to SearchBar on every render
+  const handleSearchChange = useCallback((value) => {
+    setSearchQuery(value)
+  }, [])
+
+  // useMemo only recomputes the filtered list when photos or searchQuery changes
+  // prevents re-filtering on every unrelated render
+  const filteredPhotos = useMemo(() => {
+    if (!searchQuery.trim()) return photos
+    return photos.filter((p) =>
+      p.author.toLowerCase().includes(searchQuery.toLowerCase())
+    )
+  }, [photos, searchQuery])
 
   return (
     <div className="min-h-screen bg-navy">
@@ -18,7 +35,7 @@ export default function App() {
           <p className="text-white/40 text-sm mt-1">30 photos from Picsum</p>
         </div>
 
-        <SearchBar />
+        <SearchBar value={searchQuery} onChange={handleSearchChange} />
 
         {loading && <LoadingSpinner />}
 
@@ -32,7 +49,12 @@ export default function App() {
           </div>
         )}
 
-        {!loading && !error && <PhotoGrid photos={photos} />}
+        {!loading && !error && (
+          <PhotoGrid
+            photos={filteredPhotos}
+            emptyMessage="No photos match your search."
+          />
+        )}
       </main>
     </div>
   )
