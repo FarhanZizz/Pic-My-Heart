@@ -10,8 +10,8 @@ export default function App() {
   const { photos, loading, error } = useFetchPhotos()
   const [state, dispatch] = useReducer(favouritesReducer, initialState)
   const [searchQuery, setSearchQuery] = useState('')
+  const [showFavourites, setShowFavourites] = useState(false)
 
-  // Rehydrate favourites from localStorage on mount
   useEffect(() => {
     const stored = localStorage.getItem('pmh_favourites')
     if (stored) {
@@ -27,26 +27,36 @@ export default function App() {
     dispatch({ type: 'TOGGLE_FAVOURITE', payload: photo })
   }, [])
 
+  const handleToggleFavouritesView = useCallback(() => {
+    setShowFavourites((prev) => !prev)
+    setSearchQuery('')
+  }, [])
+
   const filteredPhotos = useMemo(() => {
-    if (!searchQuery.trim()) return photos
-    return photos.filter((p) =>
+    const source = showFavourites ? state.favourites : photos
+    if (!searchQuery.trim()) return source
+    return source.filter((p) =>
       p.author.toLowerCase().includes(searchQuery.toLowerCase())
     )
-  }, [photos, searchQuery])
+  }, [photos, searchQuery, showFavourites, state.favourites])
 
   return (
     <div className="min-h-screen bg-navy">
       <Navbar
         favouriteCount={state.favourites.length}
-        showFavourites={false}
-        onToggleFavourites={() => {}}
+        showFavourites={showFavourites}
+        onToggleFavourites={handleToggleFavouritesView}
       />
       <main>
         <div className="max-w-7xl mx-auto px-4 pt-8 pb-2">
           <h1 className="text-2xl font-semibold text-white/90" style={{ fontFamily: 'Playfair Display, serif' }}>
-            Explore Photos
+            {showFavourites ? 'Your Favourites' : 'Explore Photos'}
           </h1>
-          <p className="text-white/40 text-sm mt-1">30 photos from Picsum</p>
+          <p className="text-white/40 text-sm mt-1">
+            {showFavourites
+              ? `${state.favourites.length} photo${state.favourites.length !== 1 ? 's' : ''} saved`
+              : '30 photos from Picsum'}
+          </p>
         </div>
 
         <SearchBar value={searchQuery} onChange={handleSearchChange} />
@@ -68,7 +78,11 @@ export default function App() {
             photos={filteredPhotos}
             favourites={state.favourites}
             onToggleFavourite={handleToggleFavourite}
-            emptyMessage="No photos match your search."
+            emptyMessage={
+              showFavourites
+                ? 'No favourites yet. Heart some photos!'
+                : 'No photos match your search.'
+            }
           />
         )}
       </main>
